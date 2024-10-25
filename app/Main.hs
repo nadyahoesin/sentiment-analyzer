@@ -1,6 +1,6 @@
-module Main (main) where
+module Main where
 
-import Lib
+import SentimentAnalyzer (main)
 
 main :: IO ()
-main = someFunc
+main = SentimentAnalyzer.main

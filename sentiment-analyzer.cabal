@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Lib
+      SentimentAnalyzer
   other-modules:
       Paths_sentiment_analyzer
   autogen-modules:
@@ -34,7 +35,12 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
+      Cabal
+    , base >=4.7 && <5
+    , bytestring
+    , cassava
+    , containers
+    , vector
   default-language: Haskell2010
 
 executable sentiment-analyzer-exe
@@ -47,8 +53,13 @@ executable sentiment-analyzer-exe
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      Cabal
+    , base >=4.7 && <5
+    , bytestring
+    , cassava
+    , containers
     , sentiment-analyzer
+    , vector
   default-language: Haskell2010
 
 test-suite sentiment-analyzer-test
@@ -62,6 +73,11 @@ test-suite sentiment-analyzer-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      Cabal
+    , base >=4.7 && <5
+    , bytestring
+    , cassava
+    , containers
     , sentiment-analyzer
+    , vector
   default-language: Haskell2010
