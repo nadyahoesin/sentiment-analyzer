@@ -1,7 +1,7 @@
 module SentimentAnalyzer (main) where
 
--- import qualified Data.ByteString.Lazy as BL
--- import Data.Csv ( decode, HasHeader(HasHeader) )
+import qualified Data.ByteString.Lazy as BL
+import Data.Csv ( decode, HasHeader(HasHeader) )
 import qualified Data.Vector as V
 import Data.Char (toLower, isAlpha)
 import qualified Data.Map as Map
@@ -10,14 +10,20 @@ type TextSentiment = (String, String)
 
 main :: IO ()
 main = do
-    -- csvData <- BL.readFile "chat_dataset.csv"
-    -- case decode HasHeader csvData of
-    --     Left err -> putStrLn err
-    --     Right v -> do
-            -- let (testVector, train) = V.splitAt (div (V.length v) 3) v
-    let tokens = tokenize "hal*&(o saya i'm nadya89828 nadya"
-    print tokens
-    print $ countTokensFreq tokens
+    -- Membaca dataset dari file CSV
+    csvData <- BL.readFile "chat_dataset.csv"
+    case decode HasHeader csvData of
+        Left err -> putStrLn err
+        Right v -> do
+            let (testVector, trainVector) = V.splitAt (V.length v `div` 3) v
+
+            let (posFreq, negFreq, neuFreq) = preprocessTrainingData trainVector
+            putStrLn "Positive Token Frequencies:"
+            print posFreq
+            putStrLn "Negative Token Frequencies:"
+            print negFreq
+            putStrLn "Neutral Token Frequencies:"
+            print neuFreq
 
 -- Mengubah 1 vektor berisi semua data menjadi tuple berisi map token ke jumlah kemunculan token untuk semua kelas
 preprocessTrainingData :: V.Vector TextSentiment -> (Map.Map String Int, Map.Map String Int, Map.Map String Int)
