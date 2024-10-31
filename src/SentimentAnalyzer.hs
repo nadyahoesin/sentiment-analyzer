@@ -73,14 +73,14 @@ countTokensFreq = foldr (\token -> Map.insertWith (+) token 1) Map.empty
 
 -- Mendapatkan probabilitas tiap kelas
 computeClassProbs :: WordFreqsByClass -> (Float, Float, Float)
-computeClassProbs = applyToAllClass countAllTokens (/)
+computeClassProbs = getProbsByClass countAllTokens
     where countAllTokens = fromIntegral . Map.foldr (+) 0
 
 -- Mendapatkan probabilitas untuk token given kelas untuk tiap kelas
 computeTokenGivenClassProbs :: String -> WordFreqsByClass -> (Float, Float, Float)
-computeTokenGivenClassProbs token = applyToAllClass getNumOfToken (/)
+computeTokenGivenClassProbs token = getProbsByClass getNumOfToken
     where getNumOfToken = fromIntegral . fromMaybe 0 . Map.lookup token
 
-applyToAllClass :: Num a => (Map.Map String Int -> a) ->  (a -> a -> a) -> WordFreqsByClass -> (a, a, a)
-applyToAllClass f g (pos, neg, neu) = (g (f pos) x, g (f neg) x, g (f neu) x)
+getProbsByClass :: (Map.Map String Int -> Float) -> WordFreqsByClass -> (Float, Float, Float)
+getProbsByClass f (pos, neg, neu) = (f pos / x, f neg / x, f neu / x)
     where x = f pos + f neg + f neu
