@@ -1,13 +1,12 @@
 module SentimentAnalyzer (main) where
 
 import qualified Data.ByteString.Lazy as BL
-import Data.Csv ( decode, HasHeader(HasHeader, NoHeader) )
+import Data.Csv ( decode, HasHeader(NoHeader) )
 import qualified Data.Vector as V
 import Data.Char (toLower, isAlpha)
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
-import Data.Set (size)
-import Data.List (intersect, union)
+import Data.List (intersect)
 
 type TextSentiment = (Int, String)
 type WordFreqsByClass = (Map.Map String Int, Map.Map String Int)
@@ -20,20 +19,23 @@ main = do
         Left err -> putStrLn err
         Right v -> do
             let (testVector, trainVector) = V.splitAt (V.length v `div` 5) v
-            print $ length $ fst $ preprocessTrainingData trainVector
-            print $ length $ fst $ removeUninformativeTokens $ preprocessTrainingData trainVector
+            -- print $ length $ fst $ preprocessTrainingData trainVector
+            -- print $ length $ fst $ removeUninformativeTokens $ preprocessTrainingData trainVector
 
             let classFreqs@(posFreq, negFreq) = removeUninformativeTokens $ preprocessTrainingData trainVector
 
-            putStrLn "Positive Token Frequencies:"
-            print posFreq
-            putStrLn "Negative Token Frequencies:"
-            print negFreq
+            -- putStrLn "Positive Token Frequencies:"
+            -- print posFreq
+            -- putStrLn "Negative Token Frequencies:"
+            -- print negFreq
 
-            putStrLn "Sentiment of \"Happy happy happy but sad\":"
-            putStrLn $ if naiveBayesClassifier "Happy happy happy but sad" classFreqs == 4 then "positive" else "negative"
+            putStr "Sentiment of \"Really happy happy but sad\": "
+            putStrLn $ if naiveBayesClassifier "Really happy happy but sad" classFreqs == 4 then "positive" else "negative"
 
-            putStrLn "Accuracy of model on testing data:"
+            putStr "Sentiment of \"Why is my code not working\": "
+            putStrLn $ if naiveBayesClassifier "Why is my code not working" classFreqs == 4 then "positive" else "negative"
+
+            putStr "Accuracy of model on testing data: "
             print $ evaluateAccuracy testVector classFreqs
 
 
@@ -57,11 +59,10 @@ countTokensFreq = foldr (\token -> Map.insertWith (+) token 1) Map.empty
 
 -- Menghapus token yang sering tetapi frequensi rata di tiap kelas
 removeUninformativeTokens :: WordFreqsByClass -> WordFreqsByClass
-removeUninformativeTokens freqs@(pos, neg) = tMap (Map.filter (> 25)) 
+removeUninformativeTokens freqs@(pos, neg) = tMap (Map.filter (> 5))  
                                              (foldr Map.delete pos uninformativeTokens, foldr Map.delete neg uninformativeTokens)
     where
-        uninformativeTokens = topPos `intersect` topNeg
-        (topPos, topNeg) = tMap (Map.keys . Map.filter (> 250)) freqs
+        uninformativeTokens = uncurry intersect $ tMap (Map.keys . Map.filter (> 500)) freqs
 
 -- Mendapatkan probabilitas tiap kelas
 computeClassProbs :: WordFreqsByClass -> (Float, Float)
@@ -73,6 +74,7 @@ computeTokenGivenClassProbs :: String -> WordFreqsByClass -> (Float, Float)
 computeTokenGivenClassProbs token (pos, neg) = ((countToken pos + 0.5) / (getNumOfToken pos + 1), (countToken neg + 0.5) / (getNumOfToken neg + 1))
     where countToken = fromIntegral . fromMaybe 0 . Map.lookup token
         
+-- Mendapatkan jumlah token sebuah kelas
 getNumOfToken :: Map.Map k Int -> Float
 getNumOfToken = fromIntegral . Map.foldr (+) 0
 
