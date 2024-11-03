@@ -15,6 +15,7 @@ type TextSentiment = (Int, String)
 
 main :: IO ()
 main = do
+    sentimentAnalyzer
     trainVector <- loadTrainingData "updated_training.csv"
     let classFreqs = preprocessTrainingData trainVector
 

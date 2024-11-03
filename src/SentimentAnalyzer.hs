@@ -19,8 +19,6 @@ sentimentAnalyzer = do
         Left err -> putStrLn err
         Right v -> do
             let (testVector, trainVector) = V.splitAt (V.length v `div` 5) v
-            -- print $ length $ fst $ preprocessTrainingData trainVector
-            -- print $ length $ fst $ removeUninformativeTokens $ preprocessTrainingData trainVector
 
             let classFreqs = preprocessTrainingData trainVector
 
@@ -63,7 +61,7 @@ countTokensFreq = foldr (\token -> Map.insertWith (+) token 1) Map.empty
 
 -- Menghapus token yang sangat sering tetapi frequensi rata di tiap kelas, atau token yang sangat jarang
 removeUninformativeTokens :: WordFreqsByClass -> WordFreqsByClass
-removeUninformativeTokens freqs@(pos, neg) = tMap (Map.filter (> 5))  
+removeUninformativeTokens freqs@(pos, neg) = tMap (Map.filter (> 5))
                                              (foldr Map.delete pos uninformativeTokens, foldr Map.delete neg uninformativeTokens)
     where uninformativeTokens = uncurry intersect $ tMap (Map.keys . Map.filter (> 450)) freqs
 
@@ -77,8 +75,8 @@ naiveBayesClassifier text freqs
     | probPos >= probNeg = 4
     | otherwise = 0
     where
-        (probPos, probNeg) = foldl1 (tZipWith (+)) [tZipWith (*) (computeTokenGivenClassProbs token freqs) classProbs | token <- tokenize text]
-        classProbs = computeClassProbs freqs
+        (probPos, probNeg) = tZipWith (*) (computeClassProbs freqs) $ 
+                             foldl1 (tZipWith (+)) [computeTokenGivenClassProbs token freqs | token <- tokenize text]
         tZipWith f (x1, y1) (x2, y2) = (f x1 x2, f y1 y2)
 
 -- Mendapatkan probabilitas tiap kelas
@@ -90,7 +88,7 @@ computeClassProbs (pos, neg) =  (getNumOfToken pos / numOfAllTokens, getNumOfTok
 computeTokenGivenClassProbs :: String -> WordFreqsByClass -> (Float, Float)
 computeTokenGivenClassProbs token (pos, neg) = ((countToken pos + 0.5) / (getNumOfToken pos + 1), (countToken neg + 0.5) / (getNumOfToken neg + 1))
     where countToken = fromIntegral . fromMaybe 0 . Map.lookup token
-        
+
 -- Mendapatkan jumlah token sebuah kelas
 getNumOfToken :: Map.Map k Int -> Float
 getNumOfToken = fromIntegral . Map.foldr (+) 0
