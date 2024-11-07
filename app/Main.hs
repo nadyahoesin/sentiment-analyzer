@@ -3,7 +3,7 @@
 module Main where
 
 import Web.Scotty
-import SentimentAnalyzer (sentimentAnalyzer, naiveBayesClassifier, preprocessTrainingData, evaluateAccuracy)
+import SentimentAnalyzer (sentimentAnalyzer, naiveBayesClassifier, preprocessTrainingData)
 import qualified Data.Text.Lazy as TL
 import Data.Aeson (object, (.=))
 import Data.Maybe (fromMaybe)
@@ -31,4 +31,3 @@ loadTrainingData filePath = do
     case decode NoHeader csvData of
         Left err -> error err
         Right v -> return v
-

@@ -1,7 +1,7 @@
-module SentimentAnalyzer (sentimentAnalyzer, naiveBayesClassifier, preprocessTrainingData, evaluateAccuracy) where
+module SentimentAnalyzer (sentimentAnalyzer, naiveBayesClassifier, preprocessTrainingData) where
 
 import qualified Data.ByteString.Lazy as BL
-import Data.Csv ( decode, HasHeader(NoHeader) )
+import Data.Csv (decode, HasHeader(NoHeader))
 import qualified Data.Vector as V
 import Data.Char (toLower, isAlpha)
 import qualified Data.Map as Map
@@ -61,9 +61,9 @@ countTokensFreq = foldr (\token -> Map.insertWith (+) token 1) Map.empty
 
 -- Menghapus token yang sangat sering tetapi frequensi rata di tiap kelas, atau token yang sangat jarang
 removeUninformativeTokens :: WordFreqsByClass -> WordFreqsByClass
-removeUninformativeTokens freqs@(pos, neg) = tMap (Map.filter (> 5))
+removeUninformativeTokens freqs@(pos, neg) = tMap (Map.filter (> 4))
                                              (foldr Map.delete pos uninformativeTokens, foldr Map.delete neg uninformativeTokens)
-    where uninformativeTokens = uncurry intersect $ tMap (Map.keys . Map.filter (> 450)) freqs
+    where uninformativeTokens = uncurry intersect $ tMap (Map.keys . Map.filter (> 3000)) freqs
 
 {-----------------------------------------------------------------------------------------------------------------------------------------------------                               
                                                     NAIVE BAYES FUNCTIONS
@@ -75,10 +75,10 @@ naiveBayesClassifier text freqs
     | probPos >= probNeg = 4
     | otherwise = 0
     where
-        (probPos, probNeg) = tZipWith (*) (computeClassProbs freqs) $ 
-                             foldl1 (tZipWith (+)) [computeTokenGivenClassProbs token freqs | token <- tokenize text]
+        (probPos, probNeg) = tZipWith (+) (tMap log $ computeClassProbs freqs) $ 
+                             foldl1 (tZipWith (+)) [tMap log $ computeTokenGivenClassProbs token freqs | token <- tokenize text]
         tZipWith f (x1, y1) (x2, y2) = (f x1 x2, f y1 y2)
-
+ 
 -- Mendapatkan probabilitas tiap kelas
 computeClassProbs :: WordFreqsByClass -> (Float, Float)
 computeClassProbs (pos, neg) =  (getNumOfToken pos / numOfAllTokens, getNumOfToken neg / numOfAllTokens)
@@ -86,7 +86,8 @@ computeClassProbs (pos, neg) =  (getNumOfToken pos / numOfAllTokens, getNumOfTok
 
 -- Mendapatkan probabilitas untuk token given kelas untuk tiap kelas (dengan laplacian smoothing)
 computeTokenGivenClassProbs :: String -> WordFreqsByClass -> (Float, Float)
-computeTokenGivenClassProbs token (pos, neg) = ((countToken pos + 0.5) / (getNumOfToken pos + 1), (countToken neg + 0.5) / (getNumOfToken neg + 1))
+computeTokenGivenClassProbs token (pos, neg) = ((countToken pos + 1) / (getNumOfToken pos + 2), 
+                                                (countToken neg + 1) / (getNumOfToken neg + 2))
     where countToken = fromIntegral . fromMaybe 0 . Map.lookup token
 
 -- Mendapatkan jumlah token sebuah kelas
