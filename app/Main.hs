@@ -11,6 +11,7 @@ import qualified Data.ByteString.Lazy as BL
 import qualified Data.Vector as V
 import Data.Csv (decode, HasHeader(NoHeader))
 import Text.Read (readMaybe)
+import System.Environment (lookupEnv)
 
 type TextSentiment = (Int, String)
 
