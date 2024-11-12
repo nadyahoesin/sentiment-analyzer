@@ -13,4 +13,6 @@ RUN stack build --only-dependencies
 
 RUN stack build
 
+EXPOSE 8080
+
 CMD ["stack", "exec", "sentiment-analyzer-exe"]
