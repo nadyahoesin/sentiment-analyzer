@@ -23,9 +23,8 @@ FROM debian:buster-slim
 
 WORKDIR /app
 
-COPY --from=build /app/.stack-work/install/aarch64-linux-tinfo6-libc6-pre232/da09576deb28cd8a9e155333060a4dab8ff8b662a23eefafcd84cf1a90af99a4/9.6.6/bin/sentiment-analyzer-exe /app/sentiment-analyzer
+COPY --from=build /app/.stack-work/install/x86_64-linux-*/*/9.6.6/bin/sentiment-analyzer-exe /app/sentiment-analyzer
 COPY --from=build /app/updated_training.csv /app/updated_training.csv
 
 EXPOSE 8080
-
 CMD ["/app/sentiment-analyzer", "--host", "0.0.0.0", "--port", "$PORT"]
