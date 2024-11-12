@@ -2,7 +2,8 @@ FROM haskell:8.10.7 AS build
 
 RUN apt-get update && apt-get install -y \
     curl \
-    && curl -sSL https://get.haskellstack.org/ | sh
+    && curl -sSL https://get.haskellstack.org/ | sh -s - -f \
+    && apt-get clean
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
