@@ -15,4 +15,4 @@ RUN stack build
 
 EXPOSE 8080
 
-CMD ["stack", "exec", "sentiment-analyzer-exe", "--", "--host", "0.0.0.0", "--port", "${PORT:-8080}"]
+CMD ["sh", "-c", "stack exec sentiment-analyzer-exe -- --host 0.0.0.0 --port ${PORT:-8080}"]
