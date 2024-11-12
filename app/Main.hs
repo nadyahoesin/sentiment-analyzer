@@ -10,6 +10,7 @@ import Data.Maybe (fromMaybe)
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.Vector as V
 import Data.Csv (decode, HasHeader(NoHeader))
+import Text.Read (readMaybe)
 
 type TextSentiment = (Int, String)
 
@@ -19,7 +20,9 @@ main = do
     trainVector <- loadTrainingData "updated_training.csv"
     let classFreqs = preprocessTrainingData trainVector
 
-    scotty 8080 $ do
+    port <- fmap (fromMaybe 8080 . (>>= readMaybe)) (lookupEnv "PORT")
+
+    scotty port $ do
         get "/" $ do
             text <- param "text"
             let sentiment = if naiveBayesClassifier (TL.unpack text) classFreqs == 4 then TL.pack "positive" else TL.pack "negative"
