@@ -26,7 +26,7 @@ main = do
     scotty port $ do
         get "/" $ do
             text <- param "text"
-            let sentiment = if naiveBayesClassifier (TL.unpack text) classFreqs == 4 then TL.pack "positive" else TL.pack "negative"
+            let sentiment = naiveBayesClassifier (TL.unpack text) classFreqs 
             json $ object ["text" .= text, "sentiment" .= sentiment]
 
 loadTrainingData :: FilePath -> IO (V.Vector TextSentiment)

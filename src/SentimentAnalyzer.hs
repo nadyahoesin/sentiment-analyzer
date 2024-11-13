@@ -27,11 +27,20 @@ sentimentAnalyzer = do
             -- putStrLn "Negative Token Frequencies:"
             -- print negFreq
 
-            putStr "Sentiment of \"Going on holiday this weekend\": "
-            putStrLn $ if naiveBayesClassifier "Going on holiday this weekend" classFreqs == 4 then "positive" else "negative"
+            putStr "Sentiment of \"I'm going to sleep\": "
+            print $ naiveBayesClassifier "I'm going to sleep" classFreqs
 
             putStr "Sentiment of \"Why is my code not working\": "
-            putStrLn $ if naiveBayesClassifier "Why is my code not working" classFreqs == 4 then "positive" else "negative"
+            print $ naiveBayesClassifier "Why is my code not working" classFreqs
+
+            putStr "Sentiment of \"Life is incredible\": "
+            print $ naiveBayesClassifier "Life is incredible" classFreqs
+
+            putStr "Sentiment of \"I can't afford this\": "
+            print $ naiveBayesClassifier "I can't afford this" classFreqs
+
+            putStr "Sentiment of \"This is kinda good\": "
+            print $ naiveBayesClassifier "This is kinda good" classFreqs
 
             putStr "Accuracy of model on testing data: "
             print $ evaluateAccuracy testVector classFreqs
@@ -63,7 +72,7 @@ countTokensFreq = foldr (\token -> Map.insertWith (+) token 1) Map.empty
 removeUninformativeTokens :: WordFreqsByClass -> WordFreqsByClass
 removeUninformativeTokens freqs@(pos, neg) = tMap (Map.filter (> 4))
                                              (foldr Map.delete pos uninformativeTokens, foldr Map.delete neg uninformativeTokens)
-    where uninformativeTokens = uncurry intersect $ tMap (Map.keys . Map.filter (> 3000)) freqs
+    where uninformativeTokens = uncurry intersect $ tMap (Map.keys . Map.filter (> 2500)) freqs
 
 {-----------------------------------------------------------------------------------------------------------------------------------------------------                               
                                                     NAIVE BAYES FUNCTIONS
@@ -71,11 +80,9 @@ removeUninformativeTokens freqs@(pos, neg) = tMap (Map.filter (> 4))
 
 -- Naive Bayes classifier, memprediksi sentimen teks ketika diberi teks dan frekuensi kata tiap kelas
 naiveBayesClassifier :: String -> WordFreqsByClass -> Int
-naiveBayesClassifier text freqs
-    | probPos >= probNeg = 4
-    | otherwise = 0
+naiveBayesClassifier text freqs = round $ 4.5 * probPos / (probPos + probNeg)
     where
-        (probPos, probNeg) = tZipWith (+) (tMap log $ computeClassProbs freqs) $ 
+        (probPos, probNeg) = tMap exp $ tZipWith (+) (tMap log $ computeClassProbs freqs) $ 
                              foldl1 (tZipWith (+)) [tMap log $ computeTokenGivenClassProbs token freqs | token <- tokenize text]
         tZipWith f (x1, y1) (x2, y2) = (f x1 x2, f y1 y2)
  
@@ -97,7 +104,7 @@ getNumOfToken = fromIntegral . Map.foldr (+) 0
 -- Mengevaluasi akurasi Naive Bayes classifier terhadap testing data
 evaluateAccuracy :: V.Vector TextSentiment -> WordFreqsByClass -> Float
 evaluateAccuracy textSentiments freqs = numOfAccurate / fromIntegral (length textSentiments)
-    where numOfAccurate = sum [1 | (sentiment, text) <- V.toList textSentiments, naiveBayesClassifier text freqs == sentiment]
+    where numOfAccurate = sum [1 | (sentiment, text) <- V.toList textSentiments, naiveBayesClassifier text freqs - sentiment <= 1]
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------                               
 
