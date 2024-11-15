@@ -7,9 +7,12 @@ Sentiment Analyzer is a web application written in Haskell that classifies the s
 ### API Endpoint
 
 `GET /`
+
 - **Description**: Analyzes the sentiment of a given text and returns the sentiment score on a scale from 0 (strongly negative) to 4 (strongly positive).
+
 - **Request**: A GET request with the following query parameter:
     - `text` (required): The input text to analyze
+
 - **Response**: A JSON object with the following structure:
     ``` 
     {
@@ -24,6 +27,8 @@ Sentiment Analyzer is a web application written in Haskell that classifies the s
         - 3: Slightly positive
         - 4: Strongly positive
     - `text`: The input text provided in the request
+
+<br>
 
 **Example Usage**
 
