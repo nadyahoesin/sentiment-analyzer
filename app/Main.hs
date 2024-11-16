@@ -12,6 +12,9 @@ import qualified Data.Vector as V
 import Data.Csv (decode, HasHeader(NoHeader))
 import Text.Read (readMaybe)
 import System.Environment (lookupEnv)
+import Network.Wai.Middleware.Cors
+import Network.Wai (Middleware)
+import Network.Wai.Middleware.Cors (simpleCorsResourcePolicy, cors, CorsResourcePolicy(..))
 
 type TextSentiment = (Int, String)
 
@@ -24,6 +27,8 @@ main = do
     port <- fmap (fromMaybe 8080 . (>>= readMaybe)) (lookupEnv "PORT")
 
     scotty port $ do
+        middleware corsMiddleware
+
         get "/" $ do
             text <- param "text"
             let sentiment = naiveBayesClassifier (TL.unpack text) classFreqs 
@@ -35,3 +40,12 @@ loadTrainingData filePath = do
     case decode NoHeader csvData of
         Left err -> error err
         Right v -> return v
+
+corsMiddleware :: Middleware
+corsMiddleware = cors (const $ Just corsPolicy)
+
+corsPolicy :: CorsResourcePolicy
+corsPolicy = simpleCorsResourcePolicy
+    { corsOrigins = Nothing 
+    , corsMethods = ["GET"] 
+    }
