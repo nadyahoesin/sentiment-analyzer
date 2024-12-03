@@ -180,7 +180,7 @@ def tokenize(text: str) -> List[str]:
     return ''.join(result).split()
 ```
 
-The loop in this function iteratively processes each character, altering state (result list) as it iterates.
+The loop in this function iteratively processes each character, altering state (`result` list) as it iterates.
 
 <br>
 
@@ -196,7 +196,7 @@ naiveBayesClassifier text freqs = round $ 4.5 * probPos / (probPos + probNeg)
                             foldl1 (tZipWith (+)) [tMap log $ computeTokenGivenClassProbs token freqs | token <- tokenize text]
 ```
 
-Probability calculations involve composing functions like tMap and foldl1, avoiding mutable state. Token probabilities are accumulated using list comprehension.
+Probability calculations involve composing functions like `tMap` and `foldl1`, avoiding mutable state. Token probabilities are accumulated using list comprehension.
 
 **Python**: Explicitly iterates over tokens and updates mutable variables.
 
@@ -218,7 +218,7 @@ def naive_bayes_classifier(text: str, freqs: WordFreqsByClass) -> int:
     return round(4.5 * exp(pos_log_prob) / (exp(pos_log_prob) + exp(neg_log_prob)))
 ```
 
-Each token is processed sequentially in a for loop, accumulating probabilities in mutable variables (pos_log_prob, neg_log_prob).
+Each token is processed sequentially in a for loop, accumulating probabilities in mutable variables `(pos_log_prob, neg_log_prob)`.
 
 <br>
 
@@ -242,7 +242,7 @@ def evaluate_accuracy(test_data: List[TextSentiment], freqs: WordFreqsByClass) -
     return correct / len(test_data)
 ```
 
-A loop iterates over each item, maintaining a mutable correct counter.
+A loop iterates over each item, maintaining a mutable `correct` counter.
 
 <br>
 
