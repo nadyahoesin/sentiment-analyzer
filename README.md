@@ -110,7 +110,7 @@ This project is fully written in Haskell, a purely functional programming langua
 
 <br>
 
-### Analysis of differences between Functional Programming (Haskell) vs. Imperative Programming (Python)
+### Analysis of differences between Functional Programming (Haskell) and Imperative Programming (Python)
 
 **High-Level Differences**
    
