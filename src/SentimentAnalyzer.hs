@@ -19,14 +19,13 @@ sentimentAnalyzer = do
         Left err -> putStrLn err
         Right v -> do
             let (testVector, trainVector) = V.splitAt (V.length v `div` 5) v
-
             let classFreqs = preprocessTrainingData trainVector
 
             -- putStrLn "Positive Token Frequencies:"
             -- print posFreq
             -- putStrLn "Negative Token Frequencies:"
             -- print negFreq
-
+            
             putStr "Sentiment of \"I'm going to sleep\": "
             print $ naiveBayesClassifier "I'm going to sleep" classFreqs
 
@@ -44,7 +43,6 @@ sentimentAnalyzer = do
 
             putStr "Accuracy of model on testing data: "
             print $ evaluateAccuracy testVector classFreqs
-
 
 {-----------------------------------------------------------------------------------------------------------------------------------------------------                               
                                                     PREPROCESSING FUNCTIONS
@@ -82,10 +80,10 @@ removeUninformativeTokens freqs@(pos, neg) = tMap (Map.filter (> 4))
 naiveBayesClassifier :: String -> WordFreqsByClass -> Int
 naiveBayesClassifier text freqs = round $ 4.5 * probPos / (probPos + probNeg)
     where
-        (probPos, probNeg) = tMap exp $ tZipWith (+) (tMap log $ computeClassProbs freqs) $ 
+        (probPos, probNeg) = tMap exp $ tZipWith (+) (tMap log $ computeClassProbs freqs) $
                              foldl1 (tZipWith (+)) [tMap log $ computeTokenGivenClassProbs token freqs | token <- tokenize text]
         tZipWith f (x1, y1) (x2, y2) = (f x1 x2, f y1 y2)
- 
+
 -- Mendapatkan probabilitas tiap kelas
 computeClassProbs :: WordFreqsByClass -> (Float, Float)
 computeClassProbs (pos, neg) =  (getNumOfToken pos / numOfAllTokens, getNumOfToken neg / numOfAllTokens)
@@ -93,7 +91,7 @@ computeClassProbs (pos, neg) =  (getNumOfToken pos / numOfAllTokens, getNumOfTok
 
 -- Mendapatkan probabilitas untuk token given kelas untuk tiap kelas (dengan laplacian smoothing)
 computeTokenGivenClassProbs :: String -> WordFreqsByClass -> (Float, Float)
-computeTokenGivenClassProbs token (pos, neg) = ((countToken pos + 1) / (getNumOfToken pos + 2), 
+computeTokenGivenClassProbs token (pos, neg) = ((countToken pos + 1) / (getNumOfToken pos + 2),
                                                 (countToken neg + 1) / (getNumOfToken neg + 2))
     where countToken = fromIntegral . fromMaybe 0 . Map.lookup token
 
