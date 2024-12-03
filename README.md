@@ -4,6 +4,8 @@
 
 Sentiment Analyzer is a web application written in Haskell that classifies the sentiment of text input. The application uses a Naive Bayes algorithm, trained on labeled data, to analyze text sentiment and classify it on a scale from strongly negative (0) to strongly positive (4). This application is publicly accessible at https://sentiment-analyzer-nadya-6ca2373a8d05.herokuapp.com.
 
+<br>
+
 ### Installation and Setup
 
 1. **Clone the repository**
@@ -35,6 +37,8 @@ Sentiment Analyzer is a web application written in Haskell that classifies the s
     heroku create sentiment-analyzer
     git push heroku main
     ```
+
+<br>
 
 ### API Endpoint
 
@@ -79,6 +83,8 @@ curl -X GET "https://sentiment-analyzer-nadya-6ca2373a8d05.herokuapp.com/?text=L
 }
 ```
 
+<br>
+
 ### Lesson Learned about Functional Programming
 This project is fully written in Haskell, a purely functional programming language. Here are some characteristics of functional programming that are present in the project:
 
@@ -102,8 +108,9 @@ This project is fully written in Haskell, a purely functional programming langua
     
     Haskell’s strong, static type system ensures correctness at compile time. The use of types like `WordFreqsByClass` and `TextSentiment` makes data types clear and reduces runtime errors.
 
-### Analysis of differences between Functional Programming (Haskell) vs. Imperative Programming (Python)
+<br>
 
+### Analysis of differences between Functional Programming (Haskell) vs. Imperative Programming (Python)
 
 **High-Level Differences**
    
